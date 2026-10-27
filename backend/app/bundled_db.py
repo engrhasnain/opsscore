@@ -17,6 +17,8 @@ import tempfile
 import threading
 from pathlib import Path
 
+from app.config import DATABASE_ENV
+
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 BUNDLED = BACKEND_DIR / "data" / "opscore.db"
 
@@ -56,7 +58,7 @@ def _engine_for(path: Path):
 
 def use_if_hosted() -> None:
     """On Vercel with no database configured, point the application at its own copy."""
-    if not os.getenv("VERCEL") or os.getenv("OPSCORE_DATABASE_URL") or os.getenv("DATABASE_URL"):
+    if not os.getenv("VERCEL") or any(os.getenv(name) for name in DATABASE_ENV):
         return
     target = runtime_path()
     with _lock:

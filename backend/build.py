@@ -13,10 +13,11 @@ import os
 import time
 
 from app.bundled_db import BUNDLED, build
+from app.config import DATABASE_ENV
 
 if __name__ == "__main__":
     started = time.perf_counter()
-    if os.getenv("OPSCORE_DATABASE_URL") or os.getenv("DATABASE_URL"):
+    if any(os.getenv(name) for name in DATABASE_ENV):
         from app import cli
 
         cli.migrate()

@@ -12,6 +12,10 @@ from typing import Literal
 from pydantic import AliasChoices, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Where a hosted database URL may be set: our own name, then the names Vercel's Neon
+# integration uses.
+DATABASE_ENV = ("OPSCORE_DATABASE_URL", "DATABASE_URL", "POSTGRES_URL")
+
 DEV_JWT_SECRET = "dev-only-insecure-secret-do-not-use-in-production"  # noqa: S105
 
 
@@ -23,14 +27,14 @@ class Settings(BaseSettings):
     environment: Literal["development", "test", "production"] = "development"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     # OPSCORE_DATABASE_URL, or DATABASE_URL as set by Vercel's Neon (Postgres) integration.
-    database_url: str = Field(
-        default="sqlite:///./opscore.db", validation_alias=AliasChoices("OPSCORE_DATABASE_URL", "DATABASE_URL")
-    )
+    database_url: str = Field(default="sqlite:///./opscore.db", validation_alias=AliasChoices(*DATABASE_ENV))
     # Migrations need a role that owns the tables; the API should not. Defaults to database_url.
     # Neon's direct (unpooled) connection is preferred for migrations.
     migration_database_url: str | None = Field(
         default=None,
-        validation_alias=AliasChoices("OPSCORE_MIGRATION_DATABASE_URL", "DATABASE_URL_UNPOOLED"),
+        validation_alias=AliasChoices(
+            "OPSCORE_MIGRATION_DATABASE_URL", "DATABASE_URL_UNPOOLED", "POSTGRES_URL_NON_POOLING"
+        ),
     )
     cors_origins: list[str] = Field(default_factory=list)
 
