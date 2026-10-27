@@ -1,17 +1,28 @@
-"""Build the bundled SQLite database: ``data/opscore.db`` with the four sample clients.
+"""Prepare the database during the Vercel build (see ``[tool.vercel.scripts]`` in pyproject.toml).
 
-Vercel runs this during the build (see ``[tool.vercel.scripts]`` in pyproject.toml), so
-the deployment ships a ready database and needs no database service. See app/bundled_db.py.
+- With a database configured (``DATABASE_URL``, e.g. Neon connected in Vercel): apply the
+  migrations and load the four sample clients if they are not there yet. Every server
+  instance then shares that one database.
+- Without one: build ``data/opscore.db`` with the tables and the sample clients, which the
+  deployment ships and each instance copies (app/bundled_db.py).
 
     python build.py
 """
 
+import os
 import time
 
 from app.bundled_db import BUNDLED, build
 
 if __name__ == "__main__":
     started = time.perf_counter()
-    BUNDLED.unlink(missing_ok=True)
-    build(BUNDLED)
-    print(f"Built {BUNDLED} in {time.perf_counter() - started:.1f} s.")
+    if os.getenv("OPSCORE_DATABASE_URL") or os.getenv("DATABASE_URL"):
+        from app import cli
+
+        cli.migrate()
+        cli.seed_demo()
+        print(f"Database ready in {time.perf_counter() - started:.1f} s.")
+    else:
+        BUNDLED.unlink(missing_ok=True)
+        build(BUNDLED)
+        print(f"Built {BUNDLED} in {time.perf_counter() - started:.1f} s.")
