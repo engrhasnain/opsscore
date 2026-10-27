@@ -36,7 +36,7 @@ export async function clearStage(client: ClientKey): Promise<string> {
   let start = (await serverNow()) - 2000;
   const open = (await ops<Page<Alert>>(client, "/alerts?status=open&status=acknowledged&limit=100")).items;
   for (const al of open) {
-    const done = await ops<Alert>(client, `/alerts/${al.id}/resolve`, { method: "POST", body: { note: "Closed before a new demo run." } });
+    const done = await ops<Alert>(client, `/alerts/${al.id}/resolve`, { method: "POST", body: { note: "Closed when the scenario was reset." } });
     // Its audit entry is written just after resolved_at; leave a margin so it stays out of this run.
     if (done.resolved_at) start = Math.max(start, new Date(done.resolved_at).getTime() + 1500);
   }

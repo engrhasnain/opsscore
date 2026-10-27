@@ -6,7 +6,7 @@ export function generateStaticParams() {
   return SCENARIOS.map((s) => ({ id: s.id }));
 }
 
-export default async function DemoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ScenarioPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sc = scenario(id);
   if (!sc) notFound();

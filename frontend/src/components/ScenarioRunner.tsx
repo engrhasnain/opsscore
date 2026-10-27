@@ -6,7 +6,7 @@ import { TopBar, useDisplayZone } from "./ui";
 import { EventsBoard } from "./EventsBoard";
 import { ChatBoard } from "./ChatBoard";
 import { CLIENTS } from "@/lib/clients";
-import { DISCOVERY, scenario } from "@/lib/scenarios";
+import { scenario } from "@/lib/scenarios";
 import { clearStage, runAction, type ActionResult } from "@/lib/runner";
 import { useLookups } from "@/lib/api";
 
@@ -24,7 +24,7 @@ export function ScenarioRunner({ id }: { id: string }) {
   const [prepError, setPrepError] = useState<string | null>(null);
   const [steps, setSteps] = useState<StepState[]>(() => sc.steps.map(() => ({ status: "idle", results: [] })));
 
-  // Start each session on a clean board (see clearStage).
+  // Start each run on a clean board (see clearStage).
   const prepare = useCallback(() => {
     setSession(null);
     setPrepError(null);
@@ -67,7 +67,7 @@ export function ScenarioRunner({ id }: { id: string }) {
   const board = useMemo(
     () =>
       !session ? (
-        <div className="panel p-8 text-center text-[13px] text-mute">{prepError ?? "Preparing a clean board…"}</div>
+        <div className="panel p-8 text-center text-[13px] text-mute">{prepError ?? "Loading…"}</div>
       ) : sc.kind === "chat" ? (
         <ChatBoard client={sc.client} since={session.since} lookups={lookups} />
       ) : (
@@ -89,33 +89,17 @@ export function ScenarioRunner({ id }: { id: string }) {
         <aside className="space-y-5 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
           <div>
             <Link href="/" className="inline-flex items-center gap-1 text-[12px] text-mute hover:text-ink">
-              <ArrowLeft size={13} /> All demos
+              <ArrowLeft size={13} /> All scenarios
             </Link>
             <div className="mt-3 text-[12px] text-mute">
-              {sc.pain} · {sc.painTitle} · {client.marketLabel}, {sc.priority === "Context" ? "short context demo" : sc.priority.toLowerCase()}
+              {client.name} · {client.place}
             </div>
             <h1 className="mt-1 text-[19px] font-semibold leading-snug">{sc.title}</h1>
             <p className="mt-1.5 text-[13px] leading-relaxed text-mute">{sc.summary}</p>
           </div>
 
-          <Notes title="Open with">
-            <p className="text-[13.5px] leading-relaxed">
-              <span className="text-[17px] font-semibold">{sc.opener.figure}</span> {sc.opener.text}
-            </p>
-            <p className="mt-1 text-[12px] text-mute">
-              Source: {sc.opener.source}
-            </p>
-          </Notes>
-
-          <Notes title="Say">
-            {sc.say.map((line) => (
-              <p key={line} className="text-[13.5px] leading-relaxed">
-                {line}
-              </p>
-            ))}
-          </Notes>
-
-          <Notes title={`Run it (${sc.steps.length} steps)`}>
+          <section>
+            <h2 className="mb-1.5 text-[12px] font-semibold text-mute">Steps</h2>
             <ol className="divide-y divide-line rounded border border-line bg-panel">
               {sc.steps.map((step, i) => {
                 const st = steps[i];
@@ -144,33 +128,16 @@ export function ScenarioRunner({ id }: { id: string }) {
                       )}
                     </div>
                     <button onClick={() => runStep(i)} disabled={busy} className={`${isNext ? "btn-dark" : "btn-line"} shrink-0 !px-2.5 !py-1 !text-[12px]`}>
-                      {st.status === "done" ? "Again" : "Run"}
+                      {st.status === "done" ? "Run again" : "Run"}
                     </button>
                   </li>
                 );
               })}
             </ol>
             <button onClick={restart} disabled={busy && !prepError} className="mt-2 inline-flex items-center gap-1 text-[12px] text-mute hover:text-ink disabled:opacity-40">
-              <RotateCcw size={12} /> Start over with a clean board
+              <RotateCcw size={12} /> Reset
             </button>
-          </Notes>
-
-          <Notes title="Close with">
-            <p className="text-[13.5px] leading-relaxed">{sc.close}</p>
-          </Notes>
-
-          <Notes title="Discovery questions">
-            <ul className="list-disc space-y-1 pl-4 text-[13px] leading-relaxed">
-              {(DISCOVERY[sc.pain] ?? []).map((q) => (
-                <li key={q}>{q}</li>
-              ))}
-            </ul>
-            {sc.validate && (
-              <p className="mt-2 text-[13px] leading-relaxed">
-                <span className="font-medium">Validate in this call:</span> {sc.validate}
-              </p>
-            )}
-          </Notes>
+          </section>
         </aside>
 
         <section className="min-w-0">{board}</section>
@@ -179,11 +146,3 @@ export function ScenarioRunner({ id }: { id: string }) {
   );
 }
 
-function Notes({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <h2 className="mb-1.5 text-[12px] font-semibold text-mute">{title}</h2>
-      <div className="space-y-2">{children}</div>
-    </section>
-  );
-}

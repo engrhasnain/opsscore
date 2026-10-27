@@ -23,9 +23,9 @@ const ALLOWED: [string, RegExp][] = [
 
 async function handle(req: Request, { params }: { params: Promise<{ client: string; path: string[] }> }) {
   const { client, path } = await params;
-  if (!isClientKey(client)) return NextResponse.json({ message: `Unknown demo client "${client}"` }, { status: 404 });
+  if (!isClientKey(client)) return NextResponse.json({ message: "Unknown operation." }, { status: 404 });
   const apiPath = "/" + path.join("/");
-  if (!ALLOWED.some(([method, re]) => method === req.method && re.test(apiPath))) return NextResponse.json({ message: "Not available in the demo" }, { status: 404 });
+  if (!ALLOWED.some(([method, re]) => method === req.method && re.test(apiPath))) return NextResponse.json({ message: "This action is not available here." }, { status: 404 });
 
   const url = new URL(req.url);
   const target = apiPath + url.search;

@@ -1,4 +1,4 @@
-// The demo scenarios, one per pain point in "Oil & Gas and Maritime: pain-point research, US vs LATAM"
+// The scenarios, one per pain point in "Oil & Gas and Maritime: pain-point research, US vs LATAM"
 // (October 2026). Each scenario sends real events and messages to the OpsCore API.
 // Opening figures are quoted from the research; its caveats apply (trade sources are indicative).
 
@@ -395,7 +395,7 @@ export const SCENARIOS: Scenario[] = [
     painTitle: "Labor shortage, automation tension and yard safety",
     priority: "Lead with",
     title: "Yard near-miss flagged to the supervisor in real time",
-    summary: "At Bayou Container Terminal a straddle carrier stops 2 m from a lasher, a squall line approaches and the gate queue builds. Supervisors get the facts, not a robot.",
+    summary: "At Bayou Container Terminal a straddle carrier stops 2 m from a lasher, a squall line approaches and the gate queue builds. Each supervisor gets the facts in seconds.",
     kind: "events",
     opener: {
       figure: "47,000",
@@ -514,7 +514,7 @@ export const SCENARIOS: Scenario[] = [
     painTitle: "Regulatory, emissions, cyber and geopolitical pressure",
     priority: "Context",
     title: "A cyber incident handled with an audit-ready record",
-    summary: "Short, for executives: the gate system is isolated after suspicious logins, the security lead is told at once, and the response is documented end to end.",
+    summary: "The gate system is isolated after suspicious logins, the security lead is told at once, and the response is documented end to end.",
     kind: "events",
     opener: {
       figure: ">$1M",

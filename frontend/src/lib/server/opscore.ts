@@ -58,7 +58,7 @@ async function login(client: ClientKey): Promise<string> {
   });
   if (res.status === 429) throw new OpsError(429, "Too many logins to OpsCore in the last minute. Wait a moment and try again.");
   if (!res.ok) {
-    throw new OpsError(res.status, `Demo login for ${CLIENTS[client].name} failed. Run "python -m app.cli seed-demo" in the backend.`);
+    throw new OpsError(res.status, `Could not sign in to OpsCore for ${CLIENTS[client].name}.`);
   }
   const data = (await res.json()) as { access_token: string; expires_in?: number };
   cache.tokens[client] = { token: data.access_token, expires: Date.now() + (data.expires_in ?? 3600) * 1000 };
@@ -75,7 +75,7 @@ async function deviceKey(client: ClientKey): Promise<string> {
 async function createKey(client: ClientKey): Promise<string> {
   const created = (await asUser(client, "/api-keys", {
     method: "POST",
-    body: JSON.stringify({ name: "Demo console devices", scopes: ["events:write", "messages:write"] }),
+    body: JSON.stringify({ name: "Site devices", scopes: ["events:write", "messages:write"] }),
   })) as { key?: string; secret?: string; api_key?: string };
   const key = created.key ?? created.secret ?? created.api_key;
   if (!key) throw new OpsError(500, "OpsCore did not return a device key.");

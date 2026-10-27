@@ -36,8 +36,8 @@ Settings (optional, see `.env.example`):
 
 | Page | What it shows |
 |---|---|
-| `/` | The four demo markets, the scenarios to lead with for each, and the six research pains mapped to their demo |
-| `/demo/<id>` | One scenario: the opening figure, what to say, steps to run one by one, and the live result |
+| `/` | The four sample operations, each with its scenarios and a link to its console |
+| `/scenario/<id>` | One scenario: the steps to run one by one, and the live result |
 | `/console/<client>` | The operations console: alerts (acknowledge, resolve, reopen), work orders (start, done, cancel), conversations (read, reply as a person, hand back, close), audit trail with chain check, and setup (read-only) |
 | `/record/<client>/<alert>` | The incident record for one alert: what was reported, who was told and when, work orders, the timeline and the chain check. Printable, for an insurer or an auditor |
 
@@ -53,10 +53,10 @@ Settings (optional, see `.env.example`):
 | `us-port-congestion` | Bayou Container Terminal | Maritime 1 |
 | `us-port-records` | Bayou Container Terminal | Maritime 3 (short context demo) |
 
-The home page follows the research's "Priority by market" table: for each market, the
-demo to lead with, the one to show next, and what to skip. Every scenario page carries the
-opening figure, what to say, the steps, the closing question, and the research's discovery
-questions for that pain.
+The screens show only the product, with no sales wording, so they can be shared with a
+client from the start. The talking points for each scenario (opening figure, what to say,
+closing question, discovery questions, which scenario to lead with in each market) are in
+`src/lib/scenarios.ts` and in the sales guide PDF.
 
 Scenario content lives in `src/lib/scenarios.ts`; the code that runs each step
 is in `src/lib/runner.ts`.

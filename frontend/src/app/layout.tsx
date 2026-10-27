@@ -6,14 +6,16 @@ const sans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], w
 const mono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
-  title: "OpsCore · Oil & Gas and Maritime demo",
-  description: "Something happens at a site, the right person finds out straight away, and a clean record is kept. Demo by Zenthic.",
+  title: "OpsCore",
+  description: "Something happens at a site, the right person knows in seconds, and a complete record is kept.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${sans.variable} ${mono.variable} font-sans antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${sans.variable} ${mono.variable} font-sans antialiased`} suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

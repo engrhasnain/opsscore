@@ -144,7 +144,7 @@ _PORT_EXTRA_RULES = [
 CLIENTS: list[DemoClient] = [
     # ------------------------------------------------------------------ US oil & gas
     DemoClient(
-        name="Permian Ridge Operating (demo)",
+        name="Permian Ridge Operating",
         slug="demo-permian-ridge",
         owner_email="owner@permian.demo",
         owner_name="Jordan Hayes",
@@ -189,7 +189,7 @@ CLIENTS: list[DemoClient] = [
             {
                 "name": "Jordan Hayes",
                 "role_label": "safety_lead",
-                "email": "jhayes@permian.demo",
+                "email": "j.hayes@permianridgeop.com",
                 "phone": "+14325550141",
                 "locale": Locale.EN,
             },
@@ -203,7 +203,7 @@ CLIENTS: list[DemoClient] = [
             {
                 "name": "Kayla Brooks",
                 "role_label": "operations_supervisor",
-                "email": "kbrooks@permian.demo",
+                "email": "k.brooks@permianridgeop.com",
                 "phone": "+14325550143",
                 "locale": Locale.EN,
             },
@@ -217,7 +217,7 @@ CLIENTS: list[DemoClient] = [
             {
                 "name": "Sam Patel",
                 "role_label": "environmental_lead",
-                "email": "spatel@permian.demo",
+                "email": "s.patel@permianridgeop.com",
                 "phone": "+14325550145",
                 "locale": Locale.EN,
             },
@@ -279,7 +279,7 @@ CLIENTS: list[DemoClient] = [
     ),
     # ------------------------------------------------------------------ LATAM oil & gas
     DemoClient(
-        name="Andes Energy (demo)",
+        name="Andes Energy",
         slug="demo-andes-energy",
         owner_email="owner@andes.demo",
         owner_name="Ana Quiroga",
@@ -337,7 +337,7 @@ CLIENTS: list[DemoClient] = [
             {
                 "name": "Lucía Ferreyra",
                 "role_label": "safety_lead",
-                "email": "safety@andes.demo",
+                "email": "seguridad@andesenergia.com.ar",
                 "phone": "+5492995550101",
                 "locale": Locale.ES,
             },
@@ -358,14 +358,14 @@ CLIENTS: list[DemoClient] = [
             {
                 "name": "Ana Quiroga",
                 "role_label": "operations_supervisor",
-                "email": "operaciones@andes.demo",
+                "email": "operaciones@andesenergia.com.ar",
                 "phone": "+5492995550104",
                 "locale": Locale.ES,
             },
             {
                 "name": "Valeria Paz",
                 "role_label": "environmental_lead",
-                "email": "ambiente@andes.demo",
+                "email": "ambiente@andesenergia.com.ar",
                 "phone": "+5492995550105",
                 "locale": Locale.ES,
             },
@@ -439,7 +439,7 @@ CLIENTS: list[DemoClient] = [
     ),
     # ------------------------------------------------------------------ US maritime
     DemoClient(
-        name="Bayou Container Terminal (demo)",
+        name="Bayou Container Terminal",
         slug="demo-bayou-terminal",
         owner_email="owner@bayou.demo",
         owner_name="Marcus Bell",
@@ -484,7 +484,7 @@ CLIENTS: list[DemoClient] = [
                 "name": "Dana Whitfield",
                 "role_label": "operations_supervisor",
                 "phone": "+15045550110",
-                "email": "ops@bayou.demo",
+                "email": "operations@bayouterminal.com",
                 "locale": Locale.EN,
             },
             {"name": "Marcus Bell", "role_label": "yard_supervisor", "phone": "+15045550111", "locale": Locale.EN},
@@ -492,13 +492,13 @@ CLIENTS: list[DemoClient] = [
                 "name": "Priya Shah",
                 "role_label": "security_lead",
                 "phone": "+15045550112",
-                "email": "security@bayou.demo",
+                "email": "security@bayouterminal.com",
                 "locale": Locale.EN,
             },
             {
                 "name": "Luis Ortega",
                 "role_label": "customer_service_lead",
-                "email": "service@bayou.demo",
+                "email": "customerservice@bayouterminal.com",
                 "phone": "+15045550113",
                 "locale": Locale.ES,
             },
@@ -589,7 +589,7 @@ CLIENTS: list[DemoClient] = [
     ),
     # ------------------------------------------------------------------ LATAM maritime
     DemoClient(
-        name="Terminal Atlântico (demo)",
+        name="Terminal Atlântico",
         slug="demo-terminal-atlantico",
         owner_email="owner@atlantico.demo",
         owner_name="Rafael Lima",
@@ -627,13 +627,13 @@ CLIENTS: list[DemoClient] = [
                 "name": "Rafael Lima",
                 "role_label": "operations_supervisor",
                 "phone": "+5513955550120",
-                "email": "operacoes@atlantico.demo",
+                "email": "operacoes@terminalatlantico.com.br",
                 "locale": Locale.PT,
             },
             {
                 "name": "Camila Rocha",
                 "role_label": "customer_service_lead",
-                "email": "atendimento@atlantico.demo",
+                "email": "atendimento@terminalatlantico.com.br",
                 "phone": "+5513955550121",
                 "locale": Locale.PT,
             },
@@ -649,7 +649,7 @@ CLIENTS: list[DemoClient] = [
                 "name": "Paulo Reis",
                 "role_label": "security_lead",
                 "phone": "+5513955550124",
-                "email": "seguranca@atlantico.demo",
+                "email": "seguranca@terminalatlantico.com.br",
                 "locale": Locale.PT,
             },
         ],

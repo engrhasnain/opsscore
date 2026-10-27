@@ -57,7 +57,7 @@ export function ChannelIcon({ channel, size = 13 }: { channel: string; size?: nu
 
 export const CHANNEL_LABEL: Record<string, string> = { email: "Email", sms: "SMS", whatsapp: "WhatsApp" };
 
-// Times are shown in the demo client's own time zone (a Texas pad at Texas time), not
+// Times are shown in the client's own time zone (a Texas pad at Texas time), not
 // the presenter's laptop zone. Each page shows one client, so the page sets it once.
 let displayZone: string | undefined;
 
@@ -115,14 +115,13 @@ export function TopBar({ right }: { right?: React.ReactNode }) {
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-[15px] font-semibold">OpsCore</span>
-          <span className="rounded-sm bg-white/10 px-1.5 py-px text-[11px] text-white/70">Sales demo</span>
         </Link>
         <nav className="flex gap-4 text-sm text-white/75">
           <Link href="/" className="hover:text-white">
             Scenarios
           </Link>
           <Link href="/console/permian" className="hover:text-white">
-            Console
+            Operations console
           </Link>
         </nav>
         <div className="ml-auto flex items-center gap-4">
