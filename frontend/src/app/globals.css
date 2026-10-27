@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* OpsCore: plain operations software. Neutral greys, near-black text, one accent, and
+   severity colours that mean the same thing on every screen. */
+@theme inline {
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+
+  --color-paper: #f4f5f7;
+  --color-panel: #ffffff;
+  --color-line: #dfe2e7;
+  --color-ink: #16181d;
+  --color-mute: #5b616b;
+  --color-faint: #767c86;
+  --color-signal: #e8590c;
+  --color-signal-soft: #fff1e6;
+  --color-steel: #22313f;
+  --color-steel-2: #2f4252;
+
+  --color-sev-critical: #c92a2a;
+  --color-sev-high: #d9480f;
+  --color-sev-medium: #a96500;
+  --color-sev-low: #1c6fc4;
+  --color-sev-info: #5f6670;
+  --color-ok: #2b8a3e;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+@utility panel {
+  @apply rounded border border-line bg-panel;
+}
+@utility eyebrow {
+  @apply text-[12px] font-medium text-mute;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-1.5 rounded px-3 py-1.5 text-[13px] font-medium transition disabled:cursor-not-allowed disabled:opacity-40;
+}
+@utility btn-dark {
+  @apply btn bg-steel text-white hover:bg-steel-2;
+}
+@utility btn-line {
+  @apply btn border border-line bg-panel text-ink hover:border-ink;
+}
+
+@keyframes arrive {
+  from {
+    background-color: #fff6ec;
+  }
+  to {
+    background-color: transparent;
+  }
+}
+.arrive {
+  animation: arrive 2.5s ease-out;
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arrive,
+  .live-dot {
+    animation: none;
+  }
+}

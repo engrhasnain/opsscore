@@ -1,0 +1,56 @@
+# Local and pilot deployment: PostgreSQL, a one-shot migration, the API, the worker.
+#   docker compose up --build
+#   docker compose run --rm api python -m app.cli create-platform-admin --email you@company.com --name "You"
+# Change every password below before using this anywhere but your laptop.
+
+x-app-env: &app-env
+  OPSCORE_ENVIRONMENT: ${OPSCORE_ENVIRONMENT:-development}
+  OPSCORE_DATABASE_URL: postgresql+psycopg://opscore_app:change-me-app-password@db:5432/opscore
+  OPSCORE_MIGRATION_DATABASE_URL: postgresql+psycopg://opscore:change-me-owner-password@db:5432/opscore
+  OPSCORE_JWT_SECRET: ${OPSCORE_JWT_SECRET:?Set OPSCORE_JWT_SECRET to a long random value (see README)}
+  OPSCORE_NOTIFY_INLINE: "true"
+  OPSCORE_ASSISTANT_LLM_ENABLED: ${OPSCORE_ASSISTANT_LLM_ENABLED:-false}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: opscore
+      POSTGRES_USER: opscore
+      POSTGRES_PASSWORD: change-me-owner-password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/init-roles.sql:/docker-entrypoint-initdb.d/10-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opscore -d opscore"]
+      interval: 5s
+      retries: 10
+
+  migrate:
+    build: ./backend
+    environment: *app-env
+    command: ["python", "-m", "app.cli", "migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: ./backend
+    environment: *app-env
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    build: ./backend
+    environment: *app-env
+    command: ["python", "-m", "app.worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
