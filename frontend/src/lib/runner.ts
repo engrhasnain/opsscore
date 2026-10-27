@@ -7,6 +7,8 @@ import type { Alert, AuditVerify, Conversation, Page, WorkOrder } from "./types"
 export interface ActionResult {
   ok: boolean;
   text: string;
+  /** Messages handed to a person by this action. */
+  escalated?: number;
 }
 
 interface IngestResult {
@@ -78,10 +80,11 @@ export async function runAction(client: ClientKey, a: Action, since: string, run
         method: "POST",
         body: { channel: a.channel ?? "whatsapp", sender: senderFor(a.sender, run), display_name: a.name, body: a.body },
       });
-      return { ok: true, text: r.escalated ? "Handed to a person · on-call alerted" : "Answered by the assistant" };
+      return { ok: true, text: r.escalated ? "Handed to a person · on-call alerted" : "Answered by the assistant", escalated: r.escalated ? 1 : 0 };
     }
     case "flood": {
       let answered = 0;
+      let escalated = 0;
       await Promise.all(
         a.messages.map(async (m) => {
           const r = await ops<InboundResult>(client, "/assistant/inbound", {
@@ -89,9 +92,10 @@ export async function runAction(client: ClientKey, a: Action, since: string, run
             body: { channel: "whatsapp", sender: senderFor(m.sender, run), display_name: m.name, body: m.body },
           });
           if (!r.escalated && r.reply) answered++;
+          if (r.escalated) escalated++;
         }),
       );
-      return { ok: true, text: `${answered} of ${a.messages.length} answered by the assistant` };
+      return { ok: true, text: `${answered} of ${a.messages.length} answered by the assistant`, escalated };
     }
     case "ack":
     case "resolve": {
