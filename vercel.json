@@ -3,7 +3,14 @@
   "services": {
     "web": {
       "root": "frontend/",
-      "bindings": [{ "type": "service", "service": "api", "format": "url", "env": "OPSCORE_API_URL" }]
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api",
+          "format": "url",
+          "env": "OPSCORE_API_URL"
+        }
+      ]
     },
     "api": {
       "root": "backend/",
@@ -11,14 +18,12 @@
       "entrypoint": "app.main:app"
     }
   },
-  "rewrites": [{ "source": "/(.*)", "destination": { "service": "web" } }],
-  "daemons": {
-    "worker": {
-      "root": "backend/",
-      "entrypoint": "Dockerfile",
-      "command": ["python", "-m", "app.worker"],
-      "instances": { "iad1": 1 },
-      "resources": { "requests": { "memory": "1Gi" } }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web"
+      }
     }
-  }
+  ]
 }

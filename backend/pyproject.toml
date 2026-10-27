@@ -33,6 +33,11 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+[tool.vercel.scripts]
+# Builds data/opscore.db (tables and the four sample clients) so the deployment ships a
+# ready database and needs no database service. See app/bundled_db.py.
+build = "python build.py"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"

@@ -10,6 +10,7 @@ from sqlalchemy import text
 
 from app import __version__, request_context
 from app.api.routes import assistant, auth, catalog, operations, organization
+from app.bundled_db import use_if_hosted
 from app.config import get_settings
 from app.db import get_engine
 from app.errors import install_error_handlers
@@ -103,4 +104,6 @@ def create_app() -> FastAPI:
     return app
 
 
+# On Vercel with no database configured, run on a copy of the bundled SQLite file.
+use_if_hosted()
 app = create_app()

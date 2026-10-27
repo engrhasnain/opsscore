@@ -85,16 +85,20 @@ export async function runAction(client: ClientKey, a: Action, since: string, run
     case "flood": {
       let answered = 0;
       let escalated = 0;
-      await Promise.all(
-        a.messages.map(async (m) => {
+      // A few at a time: a hosted API with its own database per server (see backend
+      // app/bundled_db.py) should not be pushed into starting a second server mid-scenario.
+      const queue = [...a.messages];
+      const send = async () => {
+        for (let m = queue.shift(); m; m = queue.shift()) {
           const r = await ops<InboundResult>(client, "/assistant/inbound", {
             method: "POST",
             body: { channel: "whatsapp", sender: senderFor(m.sender, run), display_name: m.name, body: m.body },
           });
           if (!r.escalated && r.reply) answered++;
           if (r.escalated) escalated++;
-        }),
-      );
+        }
+      };
+      await Promise.all([send(), send(), send(), send()]);
       return { ok: true, text: `${answered} of ${a.messages.length} answered by the assistant`, escalated };
     }
     case "ack":

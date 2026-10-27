@@ -246,7 +246,7 @@ API keys get narrow scopes instead of roles: `events:write`, `events:read`,
 
 ```bash
 cd backend
-.venv/Scripts/python -m pytest        # 373 tests (5 PostgreSQL-only are skipped), in-memory SQLite
+.venv/Scripts/python -m pytest        # 376 tests (5 PostgreSQL-only are skipped), in-memory SQLite
 .venv/Scripts/ruff check . && .venv/Scripts/ruff format --check .
 ```
 
@@ -259,45 +259,51 @@ OPSCORE_TEST_MIGRATION_DATABASE_URL=postgresql+psycopg://opscore:PW@localhost:54
 .venv/Scripts/python -m pytest
 ```
 
-## Deploy to Vercel (one project)
+## Deploy to Vercel (one project, no database service)
 
 `vercel.json` at the repository root deploys everything as a single Vercel project:
 
 | Part | Folder | On Vercel |
 |---|---|---|
-| Demo screens (Next.js) | `frontend/` | Service `web`, public at `/` |
-| OpsCore API (FastAPI) | `backend/` | Service `api`, private: only the web service reaches it, through a binding that sets `OPSCORE_API_URL` |
-| Worker (reminders, overdue work orders, hand-back) | `backend/` | Daemon `worker`, built from `backend/Dockerfile`, production deployments only |
+| Screens (Next.js) | `frontend/` | Service `web`, public at `/` |
+| OpsCore API (FastAPI) | `backend/` | Service `api`, reached by the web service through a binding that sets `OPSCORE_API_URL` |
 
-The local SQLite file cannot be used on Vercel (its disk is temporary), so the
-deployment uses PostgreSQL.
+No database service is needed. During the build Vercel runs `backend/build.py`
+(declared in `backend/pyproject.toml`), which creates `backend/data/opscore.db` with
+the tables and the four sample clients, and the deployment ships that file. The
+deployed code is read-only, so each server instance copies it to its temporary
+folder when it starts (`backend/app/bundled_db.py`). Notifications are delivered
+during the request, so no separate worker is needed.
 
 1. Push this repository to GitHub.
 2. In Vercel: **Add New → Project**, import the repository and keep the root
    directory as the repository root. Vercel reads `vercel.json`.
-3. **Storage → Create Database → Neon (Postgres)** and connect it to the project.
-   This sets `DATABASE_URL` and `DATABASE_URL_UNPOOLED`, which OpsCore reads.
-4. **Settings → Environment Variables**:
-   - `OPSCORE_ENVIRONMENT` = `production`
-   - `OPSCORE_JWT_SECRET` = a long random value, from
-     `python -c "import secrets; print(secrets.token_urlsafe(48))"`
-5. Create the tables and the four demo clients once, from your machine, using the
-   database's direct connection string (Neon: `DATABASE_URL_UNPOOLED`). In PowerShell:
+3. Deploy. Open the project URL: the home page shows "Connected" at the top right.
 
-   ```powershell
-   cd backend
-   $env:OPSCORE_DATABASE_URL = "<DATABASE_URL_UNPOOLED from Vercel>"
-   $env:OPSCORE_JWT_SECRET = "<the same secret as on Vercel>"
-   .venv/Scripts/python -m app.cli migrate
-   .venv/Scripts/python -m app.cli seed-demo
-   ```
+How it behaves:
 
-   Remove the two variables afterwards (or close the terminal) so local runs use SQLite again.
-6. Deploy (or redeploy) to production. Open the project URL: the home page should
-   show "Connected" at the top right.
+- **Clean state.** What happens during a session lasts while that server instance
+  runs. After a quiet period Vercel stops it, and the next visitor starts again from
+  the clean copy. **Reset** on a scenario page clears that scenario's board at any time.
+- **One presenter.** For one person clicking, one instance serves everything. Two
+  instances would each have their own copy, so the screens could disagree; the
+  scenarios send their message bursts a few at a time to keep to one instance.
+- **First load.** Open the site a minute before the meeting so the API is warm.
+- Anyone who opens the URL acts as the client's owner. Keep the link private, or turn
+  on Vercel Deployment Protection.
+- Do not set `OPSCORE_ENVIRONMENT=production` for this setup: production refuses SQLite
+  and the sample clients.
 
-Anyone who opens the URL acts as the demo owner. Keep the link private, or turn on
-Vercel Deployment Protection for production.
+### With PostgreSQL instead
+
+For a real client, with data that must survive and several people working at once,
+connect a database: **Storage → Create Database → Neon (Postgres)**. This sets
+`DATABASE_URL` and `DATABASE_URL_UNPOOLED`, which OpsCore reads, and the bundled file
+is then not used. Also set `OPSCORE_ENVIRONMENT=production` and `OPSCORE_JWT_SECRET`
+(from `python -c "import secrets; print(secrets.token_urlsafe(48))"`), run
+`python -m app.cli migrate` against `DATABASE_URL_UNPOOLED` on every deploy, and run
+`python -m app.worker` somewhere (for example a Vercel daemon built from
+`backend/Dockerfile`) for reminders, overdue work orders and hand-backs.
 
 ## Production checklist
 
@@ -330,9 +336,9 @@ backend/
     notify/              providers (log, SMTP, Twilio) and the retrying dispatcher
     packs/               starter packs per industry
     api/                 routes and auth dependencies
-    cli.py  worker.py
+    cli.py  worker.py  bundled_db.py (the SQLite file shipped to Vercel)
   alembic/versions/      0001 schema, 0002 row-level security
-  tests/                 368 tests (+5 PostgreSQL-only)
+  tests/                 371 tests (+5 PostgreSQL-only)
 deploy/init-roles.sql
 docker-compose.yml
 ```
