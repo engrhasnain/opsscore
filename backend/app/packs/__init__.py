@@ -327,6 +327,13 @@ def _rule_exists(session: Session, ctx: Ctx, name: str) -> bool:
     return session.scalar(scoped(Rule, ctx.org_id).where(Rule.name == name)) is not None
 
 
+def _rule_for_type_exists(session: Session, ctx: Ctx, event_type_key: str) -> bool:
+    event_type = catalog.event_type_by_key(session, ctx.org_id, event_type_key)
+    if event_type is None:
+        return False
+    return session.scalar(scoped(Rule, ctx.org_id).where(Rule.event_type_id == event_type.id)) is not None
+
+
 def _ensure_types_and_rules(session: Session, ctx: Ctx, types: list[dict], rules: list[dict], *, system: bool) -> dict:
     created = {"event_types": 0, "rules": 0}
     for spec in types:
@@ -334,6 +341,8 @@ def _ensure_types_and_rules(session: Session, ctx: Ctx, types: list[dict], rules
             catalog.create_event_type(session, ctx, EventTypeCreateIn(**spec), is_system=system)
             created["event_types"] += 1
     for spec in rules:
+        if system and _rule_for_type_exists(session, ctx, spec["event_type"]):
+            continue  # a module's own rule may have been renamed (or translated) by the client
         if not _rule_exists(session, ctx, spec["name"]):
             catalog.create_rule(session, ctx, RuleCreateIn(**spec))
             created["rules"] += 1

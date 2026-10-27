@@ -150,3 +150,15 @@ def test_a_late_reading_is_labelled_late(client, setup, provider):
     an_hour_ago = (datetime.now(UTC) - timedelta(hours=1)).isoformat()
     post_event(client, setup, gas(30, occurred_at=an_hour_ago))
     assert any("Reported late" in m.body for m in provider.sent)
+
+
+def test_renamed_assistant_rule_is_not_created_again(client, bot, provider):
+    say(client, bot, "Vocês aceitam pagamento em dinheiro?", sender="+5513900000001")
+    rules = client.get(f"{API}/rules?limit=200", headers=bot["headers"]).json()["items"]
+    [rule] = [r for r in rules if r["name"] == "Assistant needs a person"]
+    client.patch(f"{API}/rules/{rule['id']}", headers=bot["headers"], json={"name": "Assistente precisa de uma pessoa"})
+    before = len(provider.sent)
+    say(client, bot, "Vocês aceitam cartão na balança?", sender="+5513900000002")
+    rules = client.get(f"{API}/rules?limit=200", headers=bot["headers"]).json()["items"]
+    assert not [r for r in rules if r["name"] == "Assistant needs a person"]
+    assert len(provider.sent) - before == 1, "one escalation must page on-call once"
